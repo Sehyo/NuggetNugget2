@@ -1,0 +1,7 @@
+*.suo
+*.userprefs
+bin/
+obj/
+packages/
+TestResult.xml
+

@@ -83,16 +83,16 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\OneDrive\Dokument\msgpack-sharp-master\msgpack-sharp\msgpack-sharp.csproj">
+    <ProjectReference Include="..\msgpack-sharp-master\msgpack-sharp\msgpack-sharp.csproj">
       <Project>{765753b8-a9eb-4dd1-b0f0-d478e54e9acb}</Project>
       <Name>msgpack-sharp</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\OneDrive\Dokument\Neutrino-master\NeutrinoCore\NeutrinoCore.csproj">
+    <ProjectReference Include="..\Neutrino-master\NeutrinoCore\NeutrinoCore.csproj">
       <Project>{7775cdcb-1dda-464a-b490-ac28f44e6c5b}</Project>
       <Name>NeutrinoCore</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\OneDrive\Dokument\TiledSharp-master\TiledSharp\TiledSharp.csproj">
-      <Project>{451a9ab9-fa9b-4f01-bbbd-d311689063f1}</Project>
+    <ProjectReference Include="..\TiledSharp-master\TiledSharp\TiledSharp.csproj">
+      <Project>{4c9f75e3-37a8-495b-81e9-9651bb3a5f5d}</Project>
       <Name>TiledSharp</Name>
     </ProjectReference>
   </ItemGroup>
