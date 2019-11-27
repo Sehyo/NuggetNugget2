@@ -59,7 +59,7 @@
       <Project>{7775cdcb-1dda-464a-b490-ac28f44e6c5b}</Project>
       <Name>NeutrinoCore</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TiledSharpTest\NuggetNugget2.csproj">
+    <ProjectReference Include="..\NuggetNugget2\NuggetNugget2.csproj">
       <Project>{4ff751fd-ed33-4c78-9e9f-0c0399870a0d}</Project>
       <Name>NuggetNugget2</Name>
     </ProjectReference>

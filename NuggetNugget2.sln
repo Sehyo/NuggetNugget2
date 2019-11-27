@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29519.87
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuggetNugget2", "TiledSharpTest\NuggetNugget2.csproj", "{4FF751FD-ED33-4C78-9E9F-0C0399870A0D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuggetNugget2", "NuggetNugget2\NuggetNugget2.csproj", "{4FF751FD-ED33-4C78-9E9F-0C0399870A0D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuggetNugget2Server", "NuggetNugget2Server\NuggetNugget2Server.csproj", "{A90F58CE-8929-4F4E-A1BD-9033C05B38CB}"
 EndProject
