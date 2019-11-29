@@ -34,6 +34,8 @@ namespace Neutrino.Core
 			while (overallOffset < length)
 			{
 				int offset = 1;
+                //System.Console.WriteLine("Overall offset is {0}", overallOffset);
+                //System.Console.WriteLine("Buffer length is {0}", buffer.Length);
 				var result = messages[buffer[overallOffset]];
 				if (result.IsGuaranteed)
 				{

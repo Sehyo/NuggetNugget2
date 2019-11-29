@@ -14,6 +14,8 @@ namespace NuggetNugget2
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         
+        
+        
 
         TmxMap map;
         Texture2D tileSet;
@@ -22,7 +24,9 @@ namespace NuggetNugget2
 
         Player player = new Player();
         List<Player> otherPlayers = new List<Player>();
-        
+
+        ChatBox chatBox;
+        bool chatBoxActive = false;
 
         Networker networker;
 
@@ -35,7 +39,7 @@ namespace NuggetNugget2
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-
+            this.IsMouseVisible = true;
             //graphics.IsFullScreen = true;
             graphics.PreferredBackBufferWidth = 640;
             graphics.PreferredBackBufferHeight = 480;
@@ -52,6 +56,9 @@ namespace NuggetNugget2
         {
             networker = new Networker(player, otherPlayers);
             base.Initialize();
+
+            chatBox = new ChatBox(graphics.GraphicsDevice, this.Content.Load<SpriteFont>("NuggetText"), this.Window, networker);
+            networker.SetChatBox(chatBox);
         }
 
         /// <summary>
@@ -93,7 +100,9 @@ namespace NuggetNugget2
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 Exit();
 
-            player.Update(gameTime);
+            chatBox.Update(gameTime, ref chatBoxActive);
+            player.Update(gameTime, chatBoxActive);
+            
             Camera.position = player.GetPosition();
 
             if (elapsedMsSinceNetworkUpdate >= networkMsLimit)
@@ -102,6 +111,7 @@ namespace NuggetNugget2
                 networker.Update();
             }
             else elapsedMsSinceNetworkUpdate += gameTime.ElapsedGameTime.Milliseconds;
+
             base.Update(gameTime);
         }
 
@@ -143,6 +153,7 @@ namespace NuggetNugget2
             }
 
             player.Draw(gameTime, spriteBatch);
+            chatBox.Draw(spriteBatch);
             spriteBatch.End();
             base.Draw(gameTime);
         }

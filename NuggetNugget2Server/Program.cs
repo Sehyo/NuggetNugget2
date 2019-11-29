@@ -33,6 +33,7 @@ namespace NuggetNugget2Server
                 return newPeer;
             };
 
+
             NeutrinoConfig.PeerTimeoutMillis = 1000000;
 
             int elapsedMsSinceUpdate = 100;
@@ -41,10 +42,19 @@ namespace NuggetNugget2Server
 
             while (true)
             {
-                
-                serverNode.Update();
                 if (nextUpdate < DateTime.Now)
                 {
+                    try
+                    {
+                        serverNode.Update();
+                    }
+                    catch (Exception e)
+                    {
+                        System.Console.WriteLine("We crashed {0}", e.Message);
+                        System.Console.WriteLine(e.StackTrace);
+                        System.Console.WriteLine(e.Source);
+                        System.Console.WriteLine(e.InnerException);
+                    }
                     nextUpdate = DateTime.Now.AddMilliseconds(msTreshold);
                     UpdateClients(serverNode);
                 }
@@ -80,14 +90,14 @@ namespace NuggetNugget2Server
 
         static void HandleMessage(Neutrino.Core.Messages.NetworkMessage msg, Node serverNode)
         {
-            System.Console.WriteLine("Received Message:");
-            System.Console.WriteLine("Type is: {0}", msg.GetType());
+            //System.Console.WriteLine("Received Message:");
+            //System.Console.WriteLine("Type is: {0}", msg.GetType());
             if(msg is PlayerMessage)
             {
                 int x = ((PlayerMessage)msg).positionX;
                 int y = ((PlayerMessage)msg).positionY;
 
-                System.Console.WriteLine("Received {0}, {1}", x, y);
+                //System.Console.WriteLine("Received {0}, {1}", x, y);
 
                 foreach (var tuple in clients)
                 {
@@ -98,6 +108,24 @@ namespace NuggetNugget2Server
                     }
                 }
                 //System.Console.WriteLine("Player Position received from client is: {0}, {1}", x, y);
+            }
+            else if(msg is ChatMessage)
+            {
+                ChatMessage chatMessage = (ChatMessage)msg;
+                string author = chatMessage.Author;
+                string message = chatMessage.Message;
+                DateTime timestamp = chatMessage.Timestamp;
+
+                var outMessage = serverNode.GetMessage<ChatMessage>();
+                outMessage.Author = author;
+                outMessage.Message = message;
+                outMessage.Timestamp = timestamp;
+
+                foreach (var tuple in clients)
+                {
+                    if (tuple.Item1 == msg.Source) continue; // Skip the sender!
+                    tuple.Item1.SendNetworkMessage(outMessage);
+                }
             }
         }
     }

@@ -8,6 +8,7 @@ namespace NuggetNugget2
     {
         const int serverPort = 20000;//51337;
         Player player;
+        ChatBox chatBox;
         Node serverNode;
         List<Player> otherPlayers;
 
@@ -27,6 +28,11 @@ namespace NuggetNugget2
             serverNode.Start();
         }
 
+        public void SetChatBox(ChatBox chatBox)
+        {
+            this.chatBox = chatBox;
+        }
+
         public void Update()
         {
             serverNode.Update();
@@ -34,8 +40,20 @@ namespace NuggetNugget2
             msg.positionX = (int)player.GetPosition().X;
             msg.positionY = (int)player.GetPosition().Y;
             msg.PID = 1;
-            System.Console.WriteLine("Sending {0} and {1}", msg.positionX, msg.positionY);
+            //System.Console.WriteLine("Sending {0} and {1}", msg.positionX, msg.positionY);
             //serverNode.ConnectedPeers
+            serverNode.SendToAll(msg);
+            serverNode.Update();
+            serverNode.Update();
+        }
+
+        public void SendChatMessage(ChatMessage chatMessage)
+        {
+            var msg = serverNode.GetMessage<ChatMessage>();
+            msg.Author = chatMessage.author;
+            msg.Message = chatMessage.message;
+            msg.Timestamp = chatMessage.timestamp;
+
             serverNode.SendToAll(msg);
             serverNode.Update();
             serverNode.Update();
@@ -45,9 +63,9 @@ namespace NuggetNugget2
         {
             if(msg is PlayerMessage)
             {
-                System.Console.WriteLine("We received a player message!");
+                //System.Console.WriteLine("We received a player message!");
                 PlayerMessage pMsg = (PlayerMessage)msg;
-                System.Console.WriteLine("Player {0} is at {1}, {2}", pMsg.PID, pMsg.positionX, pMsg.positionY);
+                //System.Console.WriteLine("Player {0} is at {1}, {2}", pMsg.PID, pMsg.positionX, pMsg.positionY);
                 // Does the current player exist?
                 bool exists = false;
                 foreach (var currentPlayer in otherPlayers)
@@ -55,7 +73,7 @@ namespace NuggetNugget2
                     if(currentPlayer.PID == pMsg.PID)
                     {
                         exists = true;
-                        System.Console.WriteLine("Setting other player pos to {0} and {1}", pMsg.positionX, pMsg.positionY);
+                        //System.Console.WriteLine("Setting other player pos to {0} and {1}", pMsg.positionX, pMsg.positionY);
                         currentPlayer.SetPosition(pMsg.positionX, pMsg.positionY);
                         break;
                     }
@@ -70,6 +88,12 @@ namespace NuggetNugget2
                     newPlayer.PID = pMsg.PID;
                     otherPlayers.Add(newPlayer);
                 }
+            }
+            else if(msg is ChatMessage)
+            {
+                ChatMessage cMsg = (ChatMessage)msg;
+                ChatMessage receivedChatMessage = new ChatMessage(cMsg.Message, cMsg.Author, cMsg.Timestamp);
+                chatBox.HandleForeignMessage(receivedChatMessage);
             }
             else
             {

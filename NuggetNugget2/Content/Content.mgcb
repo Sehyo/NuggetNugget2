@@ -37,6 +37,13 @@
 /processorParam:TextureFormat=Color
 /build:nugget.png
 
+#begin NuggetText.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:NuggetText.spritefont
+
 #begin overworld.png
 /importer:TextureImporter
 /processor:TextureProcessor

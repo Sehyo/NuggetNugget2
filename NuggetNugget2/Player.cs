@@ -20,14 +20,17 @@ namespace NuggetNugget2
             return playerTexture;
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(GameTime gameTime, bool chatBoxActive)
         {
             KeyboardState state = Keyboard.GetState();
             float speed = 0.2f * (float)gameTime.ElapsedGameTime.TotalMilliseconds;
-            if (state.IsKeyDown(Keys.W)) playerRectangle.Y -= (int)speed;
-            if (state.IsKeyDown(Keys.A)) playerRectangle.X -= (int)speed;
-            if (state.IsKeyDown(Keys.S)) playerRectangle.Y += (int)speed;
-            if (state.IsKeyDown(Keys.D)) playerRectangle.X += (int)speed;
+            if (!chatBoxActive)
+            {
+                if (state.IsKeyDown(Keys.W)) playerRectangle.Y -= (int)speed;
+                if (state.IsKeyDown(Keys.A)) playerRectangle.X -= (int)speed;
+                if (state.IsKeyDown(Keys.S)) playerRectangle.Y += (int)speed;
+                if (state.IsKeyDown(Keys.D)) playerRectangle.X += (int)speed;
+            }
         }
 
         public Vector2 GetPosition()
