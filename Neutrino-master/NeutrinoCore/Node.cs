@@ -166,7 +166,12 @@ namespace Neutrino.Core
 				}
 				catch (Exception ex)
 				{
-					NeutrinoConfig.LogError("Error handling message: " + ex);
+                    if (ex is InvalidOperationException)
+                    {
+                        System.Console.WriteLine("The evil error happened.");
+                        return;
+                    }
+                    NeutrinoConfig.LogError("Error handling message: " + ex);
 				}
 
 				// TBD: When tests are complete, test whether we need to reallocate here?
