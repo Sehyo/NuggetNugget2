@@ -83,7 +83,7 @@ namespace NuggetNugget2
                 {
                     System.Console.WriteLine("NEW PLAYER!?!?!?!?!?!??");
                     Player newPlayer = new Player();
-                    newPlayer.setPlayerTexture(player.GetPlayerTexture());
+                    newPlayer.objectTexture = player.objectTexture;
                     newPlayer.SetPosition(pMsg.positionX, pMsg.positionY);
                     newPlayer.PID = pMsg.PID;
                     otherPlayers.Add(newPlayer);

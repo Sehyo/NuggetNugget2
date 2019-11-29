@@ -4,20 +4,13 @@ using Microsoft.Xna.Framework.Input;
 
 namespace NuggetNugget2
 {
-    public class Player
+    public class Player : GameObject
     {
         public int PID = -1;
-        Texture2D playerTexture;
-        public Rectangle playerRectangle = new Rectangle(0, 0, 69 / 2, 130 / 2);
-
-        public void setPlayerTexture(Texture2D playerTexture)
+        
+        public Player()
         {
-            this.playerTexture = playerTexture;
-        }
-
-        public Texture2D GetPlayerTexture()
-        {
-            return playerTexture;
+            base.objectRectangle = new Rectangle(100, 100, 35, 65);
         }
 
         public void Update(GameTime gameTime, bool chatBoxActive)
@@ -26,28 +19,23 @@ namespace NuggetNugget2
             float speed = 0.2f * (float)gameTime.ElapsedGameTime.TotalMilliseconds;
             if (!chatBoxActive)
             {
-                if (state.IsKeyDown(Keys.W)) playerRectangle.Y -= (int)speed;
-                if (state.IsKeyDown(Keys.A)) playerRectangle.X -= (int)speed;
-                if (state.IsKeyDown(Keys.S)) playerRectangle.Y += (int)speed;
-                if (state.IsKeyDown(Keys.D)) playerRectangle.X += (int)speed;
+                if (state.IsKeyDown(Keys.W)) base.objectRectangle.Y -= (int)speed;
+                if (state.IsKeyDown(Keys.A)) base.objectRectangle.X -= (int)speed;
+                if (state.IsKeyDown(Keys.S)) base.objectRectangle.Y += (int)speed;
+                if (state.IsKeyDown(Keys.D)) base.objectRectangle.X += (int)speed;
             }
-        }
-
-        public Vector2 GetPosition()
-        {
-            return new Vector2(playerRectangle.X, playerRectangle.Y);
         }
 
         public void SetPosition(int x, int y)
         {
-            playerRectangle.X = x;
-            playerRectangle.Y = y;
+            objectRectangle.X = x;
+            objectRectangle.Y = y;
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            Vector2 localPos = Camera.GlobalPosToLocalPos(new Vector2(playerRectangle.X, playerRectangle.Y));
-            spriteBatch.Draw(playerTexture, new Rectangle((int)localPos.X, (int)localPos.Y, playerRectangle.Width, playerRectangle.Height), Color.White);
+            Vector2 localPos = Camera.GlobalPosToLocalPos(new Vector2(objectRectangle.X, objectRectangle.Y));
+            spriteBatch.Draw(objectTexture, new Rectangle((int)localPos.X, (int)localPos.Y, objectRectangle.Width, objectRectangle.Height), Color.White);
         }
     }
 }

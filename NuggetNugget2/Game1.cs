@@ -69,7 +69,7 @@ namespace NuggetNugget2
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            player.setPlayerTexture(this.Content.Load<Texture2D>("nugget"));
+            player.objectTexture = this.Content.Load<Texture2D>("nugget");
             map = new TmxMap("Content/testExported.tmx");
             tileSet = Content.Load<Texture2D>(map.Tilesets[0].Name.ToString());
             tileWidth = map.Tilesets[0].TileWidth;
@@ -149,7 +149,7 @@ namespace NuggetNugget2
             foreach (var otherPlayer in otherPlayers)
             {
                 Vector2 localPos = Camera.GlobalPosToLocalPos(new Vector2(otherPlayer.GetPosition().X, otherPlayer.GetPosition().Y));
-                spriteBatch.Draw(otherPlayer.GetPlayerTexture(), new Rectangle((int)localPos.X, (int)localPos.Y, otherPlayer.playerRectangle.Width, otherPlayer.playerRectangle.Height), Color.Blue);
+                spriteBatch.Draw(otherPlayer.objectTexture, new Rectangle((int)localPos.X, (int)localPos.Y, otherPlayer.objectRectangle.Width, otherPlayer.objectRectangle.Height), Color.Blue);
             }
 
             player.Draw(gameTime, spriteBatch);
