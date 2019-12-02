@@ -13,17 +13,17 @@ namespace NuggetNugget2
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        
-        
-        
 
         TmxMap map;
         Texture2D tileSet;
 
+        SpriteFont font;
         
 
         Player player = new Player();
         List<Player> otherPlayers = new List<Player>();
+
+        int msChatDisplayTreshold = 3000;
 
         ChatBox chatBox;
         bool chatBoxActive = false;
@@ -69,6 +69,7 @@ namespace NuggetNugget2
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            font = this.Content.Load<SpriteFont>("NuggetText");
             player.objectTexture = this.Content.Load<Texture2D>("nugget");
             map = new TmxMap("Content/testExported.tmx");
             tileSet = Content.Load<Texture2D>(map.Tilesets[0].Name.ToString());
@@ -150,6 +151,44 @@ namespace NuggetNugget2
             {
                 Vector2 localPos = Camera.GlobalPosToLocalPos(new Vector2(otherPlayer.GetPosition().X, otherPlayer.GetPosition().Y));
                 spriteBatch.Draw(otherPlayer.objectTexture, new Rectangle((int)localPos.X, (int)localPos.Y, otherPlayer.objectRectangle.Width, otherPlayer.objectRectangle.Height), Color.Blue);
+            }
+
+            List<ChatMessage> messages = chatBox.GetMessages();
+
+            for (int i = messages.Count - 1; i >= 0; i--)
+            {
+                if (System.DateTime.Now.Subtract(messages[i].timestamp).TotalMilliseconds > msChatDisplayTreshold) break; // Rest of messages are too old.
+
+                Vector2? messagePosition = null;
+
+                if(player.name == messages[i].author || true)
+                {
+                    messagePosition = new Vector2(player.objectRectangle.X, player.objectRectangle.Y);
+                }
+                else
+                {
+                    foreach(Player player in otherPlayers)
+                    {
+                        if(player.name == messages[i].author)
+                        {
+                            messagePosition = new Vector2(player.objectRectangle.X, player.objectRectangle.Y);
+                            break;
+                        }
+                    }
+                }
+
+                if (messagePosition == null) continue; // Couldn't find the player.
+
+                //messagePosition = new Vector2(messagePosition.Value.X, messagePosition.Value.Y - 50);
+
+                messagePosition = Camera.GlobalPosToLocalPos(new Vector2((messagePosition.Value.X) - (font.MeasureString(messages[i].message).X / 2), messagePosition.Value.Y - 50));
+                
+                if(graphics.GraphicsDevice.PresentationParameters.Bounds.Contains(messagePosition.Value))
+                {
+                    System.Console.WriteLine("DRAWING STRING");
+                    spriteBatch.DrawString(font, messages[i].message, messagePosition.Value, Color.Yellow);
+                }
+
             }
 
             player.Draw(gameTime, spriteBatch);

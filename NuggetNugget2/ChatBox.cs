@@ -44,6 +44,11 @@ namespace NuggetNugget2
             this.networker = networker;
         }
 
+        public List<ChatMessage> GetMessages()
+        {
+            return this.messages;
+        }
+
         public void HandleForeignMessage(ChatMessage chatMessage)
         {
             messages.Add(chatMessage);

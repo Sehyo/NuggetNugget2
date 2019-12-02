@@ -7,6 +7,7 @@ namespace NuggetNugget2
     public class Player : GameObject
     {
         public int PID = -1;
+        public string name = "";
         
         public Player()
         {
@@ -30,6 +31,11 @@ namespace NuggetNugget2
         {
             objectRectangle.X = x;
             objectRectangle.Y = y;
+        }
+
+        public Vector2 GetPosition()
+        {
+            return new Vector2(objectRectangle.X, objectRectangle.Y);
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)

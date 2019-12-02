@@ -10,6 +10,7 @@ namespace NuggetNugget2
         public string author;
         public string message;
         public DateTime timestamp;
+        public bool expired = false;
 
         [MessagePackMember(0)]
         public string Author { get; set; }

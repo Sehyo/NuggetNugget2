@@ -14,14 +14,28 @@ namespace NuggetNugget2Server
         static void Main(string[] args)
         {
             System.Console.WriteLine("Starting Server");
-            const int serverPort = 20000;
-            Node serverNode = new Node(serverPort, typeof(PlayerMessage).Assembly);
-            serverNode.OnPeerConnected += peer => System.Console.Out.WriteLine("New Peer Connected: {0}", peer);
+            const int serverPort = 8080;
+            int clientsConnected = 0;
+            int totalConnections = 0;
+            Node serverNode = new Node(serverPort, typeof(PlayerMessage).Assembly, typeof(ChatMessage).Assembly);
+            serverNode.OnPeerConnected += peer =>
+            {
+                ++clientsConnected;
+                System.Console.WriteLine("We currently have {0} connected clients.", clientsConnected);
+            };
+
+            serverNode.OnPeerDisconnected += peer =>
+            {
+                --clientsConnected;
+                System.Console.WriteLine("We now have {0} connected clients.", clientsConnected);
+            };
+
             serverNode.OnReceived += msg => HandleMessage(msg, serverNode);
             serverNode.Name = "Server";
             serverNode.Start();
             
             clients = new List<Tuple<NetworkPeer, ClientData>>();
+
 
             NeutrinoConfig.CreatePeer = () =>
             {
@@ -30,6 +44,13 @@ namespace NuggetNugget2Server
                 var clientTuple = new Tuple<NetworkPeer, ClientData>(newPeer, new ClientData());
                 
                 clients.Add(clientTuple);
+                int i = 0;
+                foreach (var item in clients)
+                {
+                    System.Console.WriteLine("PID of client {0} is: {1}", i, item.Item1.GetHashCode());
+                    i++;
+                }
+                totalConnections++;
                 return newPeer;
             };
 
@@ -44,8 +65,13 @@ namespace NuggetNugget2Server
             {
                 if (nextUpdate < DateTime.Now)
                 {
+                    
+                    nextUpdate = DateTime.Now.AddMilliseconds(msTreshold);
+
+                    UpdateClients(serverNode);
                     try
                     {
+                        serverNode.SendToAll(serverNode.GetMessage<Neutrino.Core.Messages.AckMessage>());
                         serverNode.Update();
                     }
                     catch (Exception e)
@@ -55,28 +81,20 @@ namespace NuggetNugget2Server
                         System.Console.WriteLine(e.Source);
                         System.Console.WriteLine(e.InnerException);
                     }
-                    nextUpdate = DateTime.Now.AddMilliseconds(msTreshold);
-                    UpdateClients(serverNode);
                 }
-                /*var msg = serverNode.GetMessage<PlayerMessage>();
-                msg.positionX = 5;
-                msg.positionY = 5;
-                serverNode.SendToAll(msg);
-                System.Console.WriteLine("Sent.");
-                */
-                //System.Threading.Thread.Sleep(100);
             }
         }
 
         static void UpdateClients(Node serverNode)
         {
+            //Neutrino.Core.Messages.AckMessage a;
+            //serverNode.SendToAll(serverNode.GetMessage<Neutrino.Core.Messages.Ackmessage>());
             foreach (var targetClient in clients)
             {
                 foreach (var sourceClient  in clients)
                 {
-                    //System.Console.WriteLine("target == source ? {0}", targetClient == sourceClient);
                     if (targetClient == sourceClient) continue;
-                    //System.Console.WriteLine("TARGET IS NOT SOURCE!");
+                    
                     var msg = serverNode.GetMessage<PlayerMessage>();
 
                     msg.positionX = sourceClient.Item2.positionX;
@@ -92,7 +110,8 @@ namespace NuggetNugget2Server
         {
             //System.Console.WriteLine("Received Message:");
             //System.Console.WriteLine("Type is: {0}", msg.GetType());
-            if(msg is PlayerMessage)
+            System.Console.WriteLine("Received {0}", msg.ToString());
+            if (msg is PlayerMessage)
             {
                 int x = ((PlayerMessage)msg).positionX;
                 int y = ((PlayerMessage)msg).positionY;
@@ -111,6 +130,7 @@ namespace NuggetNugget2Server
             }
             else if(msg is ChatMessage)
             {
+                System.Console.WriteLine("Received chat message: {0}, {1}", msg.Source, msg.Id);
                 ChatMessage chatMessage = (ChatMessage)msg;
                 string author = chatMessage.Author;
                 string message = chatMessage.Message;
@@ -126,6 +146,10 @@ namespace NuggetNugget2Server
                     if (tuple.Item1 == msg.Source) continue; // Skip the sender!
                     tuple.Item1.SendNetworkMessage(outMessage);
                 }
+            }
+            else
+            {
+                System.Console.WriteLine("Received other kind of message {0}", msg.ToString());
             }
         }
     }

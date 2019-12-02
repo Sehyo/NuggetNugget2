@@ -64,6 +64,7 @@
     <Compile Include="ChatMessage.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="GameObject.cs" />
+    <Compile Include="InfoMessage.cs" />
     <Compile Include="Networker.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="PlayerMessage.cs" />

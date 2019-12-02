@@ -6,18 +6,27 @@ namespace NuggetNugget2
 {
     public class Networker
     {
-        const int serverPort = 20000;//51337;
+        const int serverPort = 8080;//51337;
         Player player;
         ChatBox chatBox;
         Node serverNode;
         List<Player> otherPlayers;
 
+        bool waitingForLogin = false;
+        
+
         public Networker(Player player, List<Player> otherPlayers)
         {
             this.player = player;
             this.otherPlayers = otherPlayers;
+            // 110.35.180.67
 
-            serverNode = new Node("Sehyo", "127.0.0.1", serverPort, typeof(PlayerMessage).Assembly);
+            string ip = "110.35.180.67";
+            System.Console.WriteLine("What server? (Enter number)");
+            System.Console.WriteLine("1: Alex' Server");
+            System.Console.WriteLine("2: Localhost");
+            if (System.Console.ReadLine().Contains("2")) ip = "127.0.0.1";
+            serverNode = new Node("Sehyo", ip, serverPort, typeof(PlayerMessage).Assembly, typeof(ChatMessage).Assembly, typeof(InfoMessage).Assembly);
             serverNode.OnPeerConnected += peer => System.Console.WriteLine("Peer connected");
             serverNode.OnPeerDisconnected += peer => System.Console.WriteLine("Peer disconnected");
             serverNode.OnReceived += msg => HandleMessage(msg);
@@ -26,6 +35,15 @@ namespace NuggetNugget2
             NeutrinoConfig.PeerTimeoutMillis = 10000;
 
             serverNode.Start();
+
+            // Temporarily commented out so I can push.
+
+            //string username = "test";
+            //var infoMsg = serverNode.GetMessage<InfoMessage>();
+            //msg.name = username;
+            //serverNode.SendToAll(msg);
+            //System.Console.WriteLine("Sending login request.");
+            //serverNode.Update();
         }
 
         public void SetChatBox(ChatBox chatBox)
@@ -35,16 +53,18 @@ namespace NuggetNugget2
 
         public void Update()
         {
-            serverNode.Update();
+            if (waitingForLogin) return;
+            //serverNode.Update();
             var msg = serverNode.GetMessage<PlayerMessage>();
             msg.positionX = (int)player.GetPosition().X;
             msg.positionY = (int)player.GetPosition().Y;
             msg.PID = 1;
             //System.Console.WriteLine("Sending {0} and {1}", msg.positionX, msg.positionY);
             //serverNode.ConnectedPeers
+            System.Console.WriteLine("Sending pos");
             serverNode.SendToAll(msg);
             serverNode.Update();
-            serverNode.Update();
+            //serverNode.Update();
         }
 
         public void SendChatMessage(ChatMessage chatMessage)
@@ -63,6 +83,7 @@ namespace NuggetNugget2
         {
             if(msg is PlayerMessage)
             {
+                if (waitingForLogin) return;
                 //System.Console.WriteLine("We received a player message!");
                 PlayerMessage pMsg = (PlayerMessage)msg;
                 //System.Console.WriteLine("Player {0} is at {1}, {2}", pMsg.PID, pMsg.positionX, pMsg.positionY);
@@ -88,12 +109,26 @@ namespace NuggetNugget2
                     newPlayer.PID = pMsg.PID;
                     otherPlayers.Add(newPlayer);
                 }
+
             }
             else if(msg is ChatMessage)
             {
+                if (waitingForLogin) return;
                 ChatMessage cMsg = (ChatMessage)msg;
                 ChatMessage receivedChatMessage = new ChatMessage(cMsg.Message, cMsg.Author, cMsg.Timestamp);
+                System.Console.WriteLine("Received Chat Message: {0}, {1}", msg.Source, msg.Id);
                 chatBox.HandleForeignMessage(receivedChatMessage);
+            }
+            else if(msg is InfoMessage)
+            {
+                if(waitingForLogin)
+                {
+
+                }
+                else
+                {
+                    // ??
+                }
             }
             else
             {
